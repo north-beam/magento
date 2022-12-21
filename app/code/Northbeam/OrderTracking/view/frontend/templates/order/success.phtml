@@ -1,0 +1,12 @@
+<script type="text/javascript">
+    var hasFired = false;
+    window.onNorthbeamLoad = function() {
+        if (hasFired) return;
+
+        hasFired = true;
+        window.Northbeam.firePurchaseEvent(<?php echo $block->getNbOrderJsObject(); ?>);
+    };
+    window.onload = function() {
+        if (window.Northbeam) window.onNorthbeamLoad();
+    };
+</script>

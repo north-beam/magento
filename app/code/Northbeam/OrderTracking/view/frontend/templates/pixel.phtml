@@ -1,0 +1,17 @@
+<?php
+if ($block->getClientID()) {
+?>
+    <!-- Begin: Northbeam pixel -->
+    <script async type="text/javascript" src="//j.northbeam.io/ota-sp/<?= $block->escapeHtml($block->getClientID()) ?>.js"></script>
+    <!-- End: Northbeam pixel -->
+<?php
+} else {
+?>
+    <!-- Begin: Northbeam pixel -->
+    <script>
+        console.error('Northbeam: Please include the client ID and API key in the Magento configuration!')
+    </script>
+    <!-- End: Northbeam pixel -->
+<?php
+}
+?>
