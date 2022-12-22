@@ -2,8 +2,7 @@
 
 namespace Northbeam\OrderTracking\Block;
 
-require __DIR__ . '/../lib/NbOrderObject.php';
-
+require_once __DIR__ . '/../lib/NbOrderObject.php';
 
 class Success extends \Magento\Framework\View\Element\Template
 {

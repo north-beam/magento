@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="checkout_submit_all_after">
-        <observer name="new_order" instance="Northbeam\OrderTracking\Observer\UpdateOrder" />
+    <event name="checkout_onepage_controller_success_action">
+        <observer name="new_order" instance="Northbeam\OrderTracking\Observer\SendOrder" />
     </event>
     <event name="adminhtml_sales_order_create_process_data">
-        <observer name="update_order" instance="Northbeam\OrderTracking\Observer\UpdateOrder" />
+        <observer name="update_order" instance="Northbeam\OrderTracking\Observer\SendOrder" />
     </event>
 </config>

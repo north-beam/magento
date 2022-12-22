@@ -20,7 +20,13 @@ function setup_northbeam_objects($order)
     //get customer data
     $customer_name = $order-> getCustomerName();
     $customer_email = $order->getCustomerEmail();
-    $customer_id = (string) $order->getCustomerId();
+
+    if($order->getCustomerIsGuest()){
+        $customer_id = 'synthetic_' . $order->getCustomerEmail();
+    } else {
+        $customer_id = (string) $order->getCustomerId();
+    }
+
     $customer_phone_number = $order->getBillingAddress()->getTelephone();
     $customer_ip_address = $order->getRemoteIp();
     $coupon_code = $order->getCouponCode();
