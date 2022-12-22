@@ -8,7 +8,6 @@
             <resource>Northbeam_OrderTracking::credentials</resource>
             <group id="credentials" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>API Credentials</label>
-                <!-- <comment>TODO: write commetn here</comment> -->
                 <field id="client_id" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Client ID</label>
                 </field>
