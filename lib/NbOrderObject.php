@@ -15,16 +15,16 @@ function setup_northbeam_objects($order)
     $shipping_total = (float) $order->getShippingAmount();
     $tax = (float) $order->getTaxAmount();
     $currency = $order->getOrderCurrencyCode();
-    $time_of_purchase = date('c', time());
+    $time_of_purchase = date('c', strtotime($order->getCreatedAt()));
 
     //get customer data
     $customer_name = $order-> getCustomerName();
     $customer_email = $order->getCustomerEmail();
 
     if($order->getCustomerIsGuest()){
-        $customer_id = 'synthetic_' . $order->getCustomerEmail();
+        $customer_id = 'magento_guest_' .  md5($order->getCustomerEmail());
     } else {
-        $customer_id = (string) $order->getCustomerId();
+        $customer_id = 'magento_user_' . $order->getCustomerId();
     }
 
     $customer_phone_number = $order->getBillingAddress()->getTelephone();
