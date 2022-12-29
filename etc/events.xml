@@ -3,4 +3,7 @@
     <event name="checkout_onepage_controller_success_action">
         <observer name="new_order" instance="Northbeam\OrderTracking\Observer\SendOrder" />
     </event>
+    <event name="adminhtml_sales_order_create_process_data">
+        <observer name="updated_order" instance="Northbeam\OrderTracking\Observer\UpdatedOrder" />
+    </event>
 </config>
