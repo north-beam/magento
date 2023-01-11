@@ -44,7 +44,7 @@ class UpdatedOrder implements ObserverInterface
 
         $order = $this->order->load($orderid);
 
-        $server_data = setup_northbeam_objects($order)->server_object;
+        $server_data = setup_northbeam_objects($order)->server_object_cancelled;
 
         $curl = curl_init();
     

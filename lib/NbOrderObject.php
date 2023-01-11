@@ -43,14 +43,17 @@ function setup_northbeam_objects($order)
     // Loop Over Order Items and add to products array
     $ss_products_array = array();
     $js_products_array = array();
+    $ss_products_array_cancelled = array();
     foreach ($order->getAllVisibleItems() as $item) {
         $ss_prod_item = new stdClass();
         $js_prod_item = new stdClass();
+        $ss_prod_item_cancelled = new stdClass();
 
         //Use Variation ID if available
         $product_id = (string) $item->getProductId();
         $ss_prod_item->id = $product_id;
         $js_prod_item->productId = $product_id;
+        $ss_prod_item_cancelled->id = $product_id;
 
         $variation_id = (string) $item->getSku();
         $js_prod_item->variantId = $variation_id;
@@ -58,18 +61,26 @@ function setup_northbeam_objects($order)
         $name = $item->getName();
         $ss_prod_item->name = $name;
         $js_prod_item->productName = $name;
+        $ss_prod_item_cancelled->name = $name;
 
         $quantity = (int) $item->getQtyOrdered();
         $ss_prod_item->quantity = $quantity;
         $js_prod_item->quantity = $quantity;
+        $ss_prod_item_cancelled->quantity = 0;
 
         $price = (float) $item->getPrice();
         $ss_prod_item->price = $price;
         $js_prod_item->price = $price;
+        $ss_prod_item_cancelled->price = 0;
 
         $ss_products_array[] = $ss_prod_item;
         $js_products_array[] = $js_prod_item;
+        $ss_products_array_cancelled[] = $ss_prod_item_cancelled;
     }
+
+
+
+
 
     //create json object for server-side
     $ss_obj = new stdClass();
@@ -101,8 +112,9 @@ function setup_northbeam_objects($order)
     if($coupon_code) {
         $ss_obj->discount_codes = array($coupon_code);
     }
+    $ss_obj-> order_tags = array('MAGENTO');
 
-    $post_data = json_encode($ss_obj);
+
 
     //Create json object for javascript firePurchaseEvent
     $js_obj = new stdClass();
@@ -118,14 +130,62 @@ function setup_northbeam_objects($order)
     $js_obj->customerId = $customer_id;
     $js_obj->lineItems = $js_products_array;
 
+
+
+
+
+    //Cancel order server-side object 
+
+    $ss_obj_cancelled = new stdClass();
+    $ss_obj_cancelled->products = $ss_products_array_cancelled;
+
+    //Set Customer Shipping Data
+    $customer_shipping = new stdClass();
+    $customer_shipping->address1 = $address1;
+    $customer_shipping->address2 = $address2;
+    $customer_shipping->city = $city;
+    $customer_shipping->state = $state;
+    $customer_shipping->zip = $zip;
+    $customer_shipping->country_code = $country_code;
+
+    $ss_obj_cancelled->customer_shipping_address = $customer_shipping;
+
+    //Set Order Data
+    $ss_obj_cancelled->order_id = $order_id;
+    $ss_obj_cancelled->customer_id = $customer_id;
+    $ss_obj_cancelled->time_of_purchase = $time_of_purchase;
+    $ss_obj_cancelled->customer_email = $customer_email;
+    $ss_obj_cancelled->customer_phone_number = $customer_phone_number;
+    $ss_obj_cancelled->customer_name = $customer_name;
+    $ss_obj_cancelled->customer_ip_address = $customer_ip_address;
+    $ss_obj_cancelled->discount_amount = 0.0;
+    $ss_obj_cancelled->tax = 0.0;
+    $ss_obj_cancelled->currency = $currency;
+    $ss_obj_cancelled->purchase_total = 0.0;
+    if($coupon_code) {
+        $ss_obj_cancelled->discount_codes = array($coupon_code);
+    }
+    $ss_obj-> order_tags = array('MAGENTO-CANCELLED');
+
+
+
+
     //convert to json format
     $post_data = json_encode(array($ss_obj));
     $js_data = json_encode($js_obj);
+    $post_data_cancelled = json_encode(array($ss_obj_cancelled));
 
     //create return object
     $api_object = new stdClass();
     $api_object->server_object = $post_data;
     $api_object->javascript_object = $js_data;
+    $api_object->server_object_cancelled = $post_data_cancelled;
+
+
+
+
+
+
 
     return $api_object;
 }
