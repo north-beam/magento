@@ -9,7 +9,7 @@ require_once __DIR__ . '/../lib/NbOrderObject.php';
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
-class UpdatedOrder implements ObserverInterface
+class CancelOrder implements ObserverInterface
 {
 
     public function __construct(
@@ -34,15 +34,10 @@ class UpdatedOrder implements ObserverInterface
 
     public function execute(Observer $observer)
     {
+
         $api_key = $this->getApiKey();
         $client_id = $this->getClientID();
-        $orderid = $observer->getOrderCreateModel()->getQuote()->getReservedOrderId();
-
-        if(!$orderid) {
-            return;
-        }
-
-        $order = $this->order->load($orderid);
+        $order = $observer->getEvent()->getOrder();
 
         $server_data = setup_northbeam_objects($order)->server_object_cancelled;
 
@@ -68,6 +63,7 @@ class UpdatedOrder implements ObserverInterface
         $response = curl_exec($curl);
         curl_close($curl);
 
+        $this->logger->info("Sending order cancelation to NB S2S API");
         $this->logger->info($response);
 
     }

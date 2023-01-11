@@ -3,7 +3,7 @@
     <event name="checkout_submit_all_after">
         <observer name="new_order" instance="Northbeam\OrderTracking\Observer\SendOrder" />
     </event>
-    <event name="adminhtml_sales_order_create_process_data">
-        <observer name="updated_order" instance="Northbeam\OrderTracking\Observer\UpdatedOrder" />
+    <event name="order_cancel_after">
+        <observer name="cancel_order" instance="Northbeam\OrderTracking\Observer\CancelOrder" />
     </event>
 </config>

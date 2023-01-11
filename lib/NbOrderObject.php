@@ -10,7 +10,7 @@ function setup_northbeam_objects($order)
     //generate all info
 
     //get order data
-    $order_id = (string) $order->getId();
+    $order_id = (string) $order->getRealOrderId();
     $purchase_total = (float) $order->getGrandTotal();
     $shipping_total = (float) $order->getShippingAmount();
     $tax = (float) $order->getTaxAmount();
@@ -104,7 +104,9 @@ function setup_northbeam_objects($order)
     $ss_obj->customer_email = $customer_email;
     $ss_obj->customer_phone_number = $customer_phone_number;
     $ss_obj->customer_name = $customer_name;
-    $ss_obj->customer_ip_address = $customer_ip_address;
+    if ($customer_ip_address) {
+        $ss_obj->customer_ip_address = $customer_ip_address;
+    }
     $ss_obj->discount_amount = (float) $order-> getDiscountAmount();
     $ss_obj->tax = $tax;
     $ss_obj->currency = $currency;
@@ -157,7 +159,6 @@ function setup_northbeam_objects($order)
     $ss_obj_cancelled->customer_email = $customer_email;
     $ss_obj_cancelled->customer_phone_number = $customer_phone_number;
     $ss_obj_cancelled->customer_name = $customer_name;
-    $ss_obj_cancelled->customer_ip_address = $customer_ip_address;
     $ss_obj_cancelled->discount_amount = 0.0;
     $ss_obj_cancelled->tax = 0.0;
     $ss_obj_cancelled->currency = $currency;
@@ -165,7 +166,7 @@ function setup_northbeam_objects($order)
     if($coupon_code) {
         $ss_obj_cancelled->discount_codes = array($coupon_code);
     }
-    $ss_obj-> order_tags = array('MAGENTO-CANCELLED');
+    $ss_obj_cancelled-> order_tags = array('MAGENTO-CANCELLED');
 
 
 

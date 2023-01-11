@@ -63,9 +63,8 @@ class SendOrder implements ObserverInterface
         $response = curl_exec($curl);
         curl_close($curl);
 
+        $this->logger->info("Sending new order to NB S2S API");
         $this->logger->info($response);
-
         
-
     }
 }
