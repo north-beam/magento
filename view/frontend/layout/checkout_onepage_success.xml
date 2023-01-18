@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<body>
+    <referenceContainer name="order.success.additional.info">
+        <block class="Northbeam\OrderTracking\Block\Success" name="northbeam.order.success" template="Northbeam_OrderTracking::order/success.phtml" after="-">
+        </block>
+    </referenceContainer>
+</body>
