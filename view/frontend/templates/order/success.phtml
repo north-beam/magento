@@ -1,27 +1,43 @@
-<script type="text/javascript">
-var hasCalledNorthbeamFirePurchaseEvent = false;
-function callNorthbeamFirePurchaseEvent() {
-    if (!window.Northbeam) return;
-    if (hasCalledNorthbeamFirePurchaseEvent) return;
+<?php
+if ($block->getClientID()) {
+?>
+    <!-- Begin: Northbeam pixel firePurchaseEvent -->
+    <script type="text/javascript">
+        var hasCalledNorthbeamFirePurchaseEvent = false;
+        function callNorthbeamFirePurchaseEvent() {
+            if (!window.Northbeam) return;
+            if (hasCalledNorthbeamFirePurchaseEvent) return;
 
-    // Ordering of these two statements matters; if window.Northbeam.firePurchaseEvent fails, it's because the data passed in the php block is invalid; retrying does not make sense here
-    hasCalledNorthbeamFirePurchaseEvent = true;
-    window.Northbeam.firePurchaseEvent(<?php echo $block->getNbOrderJsObject(); ?>);
+            // Ordering of these two statements matters; if window.Northbeam.firePurchaseEvent fails, it's because the data passed in the php block is invalid; retrying does not make sense here
+            hasCalledNorthbeamFirePurchaseEvent = true;
+            window.Northbeam.firePurchaseEvent(<?php echo $block->getNbOrderJsObject(); ?>);
+        }
+
+        // Set up window onload
+        window.addEventListener('load', callNorthbeamFirePurchaseEvent);
+
+        // Set up onNorthbeamLoad
+        var existingOnNorthbeamLoad = window.onNorthbeamLoad || function() {};
+        window.onNorthbeamLoad = function() {
+            try { existingOnNorthbeamLoad() }
+            catch (e) {
+                // do nothing. We don't want an error in the existing callback to mess with our code
+            }
+            callNorthbeamFirePurchaseEvent();
+        }
+
+        // Call this once, just in case both `window.onload` and `onNorthbeamLoad` have fired by the time this script tag runs
+        callNorthbeamFirePurchaseEvent();
+    </script>
+    <!-- End: Northbeam pixel firePurchaseEvent -->
+<?php
+} else {
+?>
+    <!-- Begin: Northbeam pixel firePurchaseEvent -->
+    <script>
+        console.error('Northbeam pixel firePurchaseEvent: Please include the client ID and API key in the Magento configuration!')
+    </script>
+    <!-- End: Northbeam pixel firePurchaseEvent -->
+<?php
 }
-
-// Set up window onload
-window.addEventListener('load', callNorthbeamFirePurchaseEvent);
-
-// Set up onNorthbeamLoad
-var existingOnNorthbeamLoad = window.onNorthbeamLoad || function() {};
-window.onNorthbeamLoad = function() {
-    try { existingOnNorthbeamLoad() }
-    catch (e) {
-        // do nothing. We don't want an error in the existing callback to mess with our code
-    }
-    callNorthbeamFirePurchaseEvent();
-}
-
-// Call this once, just in case both `window.onload` and `onNorthbeamLoad` have fired by the time this script tag runs
-callNorthbeamFirePurchaseEvent();
-</script>
+?>

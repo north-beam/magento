@@ -24,18 +24,24 @@ class SendOrder implements ObserverInterface
 
     public function getClientID()
     {
-        return $this->scopeConfig->getValue("northbeam/credentials/client_id");
+        return $this->scopeConfig->getValue("northbeam/credentials/client_id", \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE);
     }
 
     public function getApiKey()
     {
-        return $this->scopeConfig->getValue("northbeam/credentials/api_key");
+        return $this->scopeConfig->getValue("northbeam/credentials/api_key", \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE);
     }
 
     public function execute(Observer $observer)
     {
         $api_key = $this->getApiKey();
+
         $client_id = $this->getClientID();
+
+        if (!$api_key or !$client_id) {
+            $this->logger->info("Northbeam S2S: Please include the client ID and API key in the Magento configuration!");
+            return;
+        }
 
         $order = $observer->getEvent()->getData('order');
 
