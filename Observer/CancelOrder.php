@@ -39,7 +39,7 @@ class CancelOrder implements ObserverInterface
 
         $client_id = $this->getClientID();
 
-        if (!$api_key or !$client_id) {
+        if (!$api_key || !$client_id) {
             $this->logger->info("Northbeam S2S: Please include the client ID and API key in the Magento configuration!");
             return;
         }
