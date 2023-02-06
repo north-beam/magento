@@ -16,6 +16,6 @@ class Pixel extends \Magento\Framework\View\Element\Template
 
     public function getClientID()
     {
-        return $this->_scopeConfig->getValue("northbeam/credentials/client_id");
+        return $this->_scopeConfig->getValue("northbeam/credentials/client_id", \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE);
     }
 }

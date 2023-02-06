@@ -47,6 +47,9 @@ class Success extends \Magento\Framework\View\Element\Template
       return setup_northbeam_objects($lastOrder)->javascript_object;
     }
 
-
+    public function getClientID()
+    {
+        return $this->_scopeConfig->getValue("northbeam/credentials/client_id", \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE);
+    }
 
 }
