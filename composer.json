@@ -2,7 +2,7 @@
     "name": "northbeam/integration",
     "description": "NB integration module",
     "type": "magento2-module",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "license": "proprietary",
     "require": {
       "php": "~7.4.0||~8.2.0"
