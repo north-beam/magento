@@ -86,7 +86,7 @@ class PixelRequestProcessor implements RequestProcessorInterface
     public function process(Request $request)
     {
         // $inputParams = $this->inputParamsResolver->resolve();
-        $inputParams = $this->inputParamsResolver->getInputData();
+        // $inputParams = $this->inputParamsResolver->getInputData();
         $route = $this->inputParamsResolver->getRoute();
         $serviceMethodName = $route->getServiceMethod();
         $serviceClassName = $route->getServiceClass();
@@ -96,7 +96,16 @@ class PixelRequestProcessor implements RequestProcessorInterface
          * @var \Magento\Framework\Api\AbstractExtensibleObject $outputData
          */
         $outputData = call_user_func_array([$service, $serviceMethodName], []);
-        $this->response->prepareResponse($outputData);
+
+        $response_code = $outputData['response_code'];
+        $response_data = $outputData['response_data'];
+        $response_headers = $outputData['response_headers'];
+
+        $this->setHeaders($response_headers);
+        $this->response->setHttpResponseCode($response_code);
+        $this->response->setMimeType('text/plain');
+        $this->response->setBody($response_data);
+        $this->response->sendResponse();
     }
 
     /**
@@ -109,5 +118,12 @@ class PixelRequestProcessor implements RequestProcessorInterface
             return true;
         }
         return false;
+    }
+
+    protected function setHeaders($headers)
+    {
+        foreach($headers as $key => $value) {
+            $this->response->setHeader($key, $value, true);
+        }
     }
 }

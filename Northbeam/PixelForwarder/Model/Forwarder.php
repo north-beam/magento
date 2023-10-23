@@ -12,12 +12,30 @@ class Forwarder implements ForwarderInterface
     protected Request $request;
     protected LoggerInterface $logger;
     protected const COLLECTOR_URL = 'https://i.northbeam.io/nb-collector';
-    protected const REQUEST_HEADERS = ['x-forwarded-proto', 'x-forwarded-host', 'x-forwarded-for', 'sec-fetch-site', 'sec-fetch-mode', 'sec-fetch-dest', 'sec-ch-ua-platform', 'sec-ch-ua-mobile', 'sec-ch-ua', 'referer', 'origin', 'cookie', 'content-type', 'accept-language', 'accept-encoding', 'accept', 'content-length', 'user-agent'];
+    protected const REQUEST_HEADERS = [
+        'x-forwarded-proto',
+        'x-forwarded-host',
+        'x-forwarded-for',
+        'sec-fetch-site',
+        'sec-fetch-mode',
+        'sec-fetch-dest',
+        'sec-ch-ua-platform',
+        'sec-ch-ua-mobile',
+        'sec-ch-ua',
+        'referer',
+        'origin',
+        'cookie',
+        'content-type',
+        'accept-language',
+        'accept-encoding',
+        'accept',
+        'user-agent',
+        'authorization'
+    ];
 
     public function __construct(Request $request)
     {
         $this->request = $request;
-
         $object_manager = ObjectManager::getInstance();
         $this->logger = $object_manager->get(LoggerInterface::class);
     }
@@ -29,9 +47,9 @@ class Forwarder implements ForwarderInterface
     {
         $request = $this->request;
         $body = $request->getRequestData();
-        $headers = $this->mapHeaderKeysCurl($this->getRequestHeaders());
-
-        $this->logger->info("Proxying request to another service");
+        $encoded_body = json_encode($body);
+        $content_length = strlen($encoded_body); // somehow the content length from the body and the content length from the headers are different, we need to calculate it ourselves
+        $headers = $this->mapHeaderKeysCurl($this->getRequestHeaders($content_length));
 
         $response_headers = [];
         $curl = curl_init();
@@ -39,7 +57,7 @@ class Forwarder implements ForwarderInterface
             CURLOPT_URL => self::COLLECTOR_URL,
             CURLOPT_RETURNTRANSFER => true, // return response as string
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $body,
+            CURLOPT_POSTFIELDS => $encoded_body,
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_HEADER => true, // include headers in response
             CURLOPT_HEADERFUNCTION => function ($curl, $header) use (&$response_headers) { // callback for response headers
@@ -53,10 +71,8 @@ class Forwarder implements ForwarderInterface
         $response_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
-
+        // Sending this back to the request processor to be sent back to the client
         return [
-            "request_data" => $body,
-            "request_headers" => $headers,
             "response_code" => $response_code,
             "response_data" => $response_body,
             "response_headers" => $response_headers,
@@ -71,9 +87,10 @@ class Forwarder implements ForwarderInterface
      *
      * @return array An array of request headers in the format (key, value).
      */
-    protected function getRequestHeaders()
+    protected function getRequestHeaders(string $content_length)
     {
         $headers = []; // (key, value) array
+        $headers['content-length'] = $content_length;
         foreach (self::REQUEST_HEADERS as $header) {
             $value = $this->request->getHeader($header, false);
             if ($value !== false) { // if header exists
@@ -109,9 +126,8 @@ class Forwarder implements ForwarderInterface
      * @param array $response_headers An array of response headers in the format (key, value).
      * @return int The number of bytes read from the header string (used by cURL as a pointer).
      */
-    function processResponseHeader($curl, string $header, array &$response_headers)
+    function processResponseHeader(\CurlHandle $curl, string $header, array &$response_headers)
     {
-        $this->logger->info('curl object: ' . get_class($curl));
         $len = strlen($header);
         $header = explode(':', $header, 2);
         if (count($header) < 2) // ignore invalid headers
