@@ -91,6 +91,7 @@ class Forwarder implements ForwarderInterface
     {
         $headers = []; // (key, value) array
         $headers['content-length'] = $content_length;
+        $headers['X-Nb-Proxy'] = 'nb-magento/1.1.0'; // this header is used to identify requests proxied by this module
         foreach (self::REQUEST_HEADERS as $header) {
             $value = $this->request->getHeader($header, false);
             if ($value !== false) { // if header exists
