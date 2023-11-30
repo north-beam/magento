@@ -2,15 +2,16 @@
     "name": "northbeam/integration",
     "description": "NB integration module",
     "type": "magento2-module",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "license": "proprietary",
     "require": {
-      "php": "~7.4.0||~8.1.0"
+      "php": "~7.4.0||~8.2.0"
     },
     "autoload": {
-      "files": [ "registration.php" ],
+      "files": [ "registration.php", "Northbeam/PixelForwarder/registration.php" ],
       "psr-4": {
-        "Northbeam\\OrderTracking\\": ""
+        "Northbeam\\OrderTracking\\": "",
+        "Northbeam\\PixelForwarder\\": "Northbeam/PixelForwarder"
       }
     }
   }
