@@ -3,12 +3,12 @@
     <policies>
         <policy id="script-src">
             <values>
-                <value id="nb-pixel-script" type="host">*</value>
+                <value id="nb-pixel-script" type="host">*.northbeam.io</value>
             </values>
         </policy>
         <policy id="connect-src">
             <values>
-                <value id="nb-pixel-connect" type="host">*</value>
+                <value id="nb-pixel-connect" type="host">*.northbeam.io</value>
             </values>
         </policy>
     </policies>
