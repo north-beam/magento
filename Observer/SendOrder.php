@@ -11,6 +11,9 @@ use Magento\Framework\Event\ObserverInterface;
 
 class SendOrder implements ObserverInterface
 {
+    private $scopeConfig;
+    private $order;
+    private $logger;
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
